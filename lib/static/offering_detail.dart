@@ -6,6 +6,7 @@ class OfferingDetail {
   String? clientName;
   String? keluhan;
   String? noWaClient;
+  int? idStatus;
   String? status;
   String? biaya;
   String? komentar;
@@ -19,6 +20,7 @@ class OfferingDetail {
     this.clientName,
     this.keluhan,
     this.noWaClient,
+    this.idStatus,
     this.status,
     this.biaya,
     this.komentar,

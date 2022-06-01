@@ -101,6 +101,7 @@ class _DetailOfferingState extends State<DetailOffering> {
                   spData['client_name'],
                   spData['keluhan'],
                   spData['no_wa_client'],
+                  spData['id_status'],
                   spData['status'],
                   spData['biaya'],
                   spData['komentar'],
@@ -119,7 +120,7 @@ class _DetailOfferingState extends State<DetailOffering> {
                           Container(
                             width: double.infinity,
                             child: Text(
-                              data.jobTitle!,
+                              data.idOrder!,
                               style: GoogleFonts.montserrat(
                                 fontSize: 25,
                                 fontWeight: FontWeight.bold,
@@ -159,7 +160,7 @@ class _DetailOfferingState extends State<DetailOffering> {
                                     ),
                                     Container(
                                       width: double.infinity,
-                                      height: 330,
+                                      height: 280,
                                       child: Card(
                                         elevation: 0.0,
                                         color:

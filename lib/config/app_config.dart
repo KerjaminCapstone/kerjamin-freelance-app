@@ -34,4 +34,8 @@ class ApiConfig {
   static String DeleteTask(String idOrder, idTask) {
     return getOfferingDetailUrl(idOrder) + "/arrangement/task/" + idTask;
   }
+
+  static String getStatusOffering(String idOrder) {
+    return getOfferingDetailUrl(idOrder) + "/status";
+  }
 }

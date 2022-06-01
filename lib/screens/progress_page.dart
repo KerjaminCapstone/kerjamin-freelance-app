@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:kerjamin_fr/screens/arrange_page.dart';
+import 'package:kerjamin_fr/screens/history_page.dart';
+import 'package:kerjamin_fr/screens/ongoing_page.dart';
 import 'package:kerjamin_fr/static/all_static.dart';
 import 'package:kerjamin_fr/static/offering_detail.dart';
 import 'package:kerjamin_fr/config/all_config.dart';
@@ -20,6 +22,10 @@ class ProgressPage extends StatefulWidget {
 }
 
 class _ProgressPageState extends State<ProgressPage> {
+  var statusHolder;
+  var _idStatusHolder;
+  Color _statusCl = Color.fromARGB(255, 246, 205, 0);
+
   _getOfferingData(idOrder) async {
     var url = Uri.parse(ApiConfig.getOfferingDetailUrl(idOrder));
     var pr = await SharedPreferences.getInstance();
@@ -38,7 +44,7 @@ class _ProgressPageState extends State<ProgressPage> {
 
   _openwhatsapp(String noWhatsapp) async {
     var noWa = noWhatsapp;
-    var message = "Halo";
+    var message = "Halo, ada yang bisa saya bantu?";
     var whatsappURl_android = "https://wa.me/$noWa/?text=${Uri.parse(message)}";
     if (await canLaunch(whatsappURl_android)) {
       await launch(whatsappURl_android);
@@ -48,17 +54,67 @@ class _ProgressPageState extends State<ProgressPage> {
     }
   }
 
+  _refreshStatus(
+      String idOrder, String deft, dynamic offering, dynamic context) async {
+    var url = Uri.parse(ApiConfig.getStatusOffering(idOrder));
+    var pr = await SharedPreferences.getInstance();
+    var tokenSp = pr.getString("token") ?? "";
+
+    var resp = await http.get(url, headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ${tokenSp}',
+    });
+
+    if (resp.statusCode == 200) {
+      var respDecode = jsonDecode(resp.body);
+      var data = respDecode['data'];
+      setState(() {
+        this.statusHolder = ((data != null) || (data['status'] != null))
+            ? data['status']
+            : deft;
+        if (data['id_status'] != null) {
+          switch (data['id_status']) {
+            case 5:
+              _statusCl = Colors.red;
+              Navigator.of(context).pushReplacement(MaterialPageRoute(
+                  builder: (context) => HistoryPage(),
+                  settings: RouteSettings(arguments: offering)));
+              break;
+            case 6:
+              _statusCl = Colors.blue;
+              break;
+            case 7:
+              _statusCl = Colors.green;
+              Navigator.of(context).pushReplacement(MaterialPageRoute(
+                  builder: (context) => HistoryPage(),
+                  settings: RouteSettings(arguments: offering)));
+              break;
+            default:
+              _statusCl = Color.fromARGB(255, 255, 221, 0);
+          }
+
+          _idStatusHolder = data['id_status'];
+        }
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final offering = ModalRoute.of(context)!.settings.arguments as OfferingItem;
 
     return Scaffold(
       appBar: AppBar(
-        automaticallyImplyLeading: false,
         title: Text('Detail pesanan'),
         actions: [
           FlatButton(
-              onPressed: () {},
+              onPressed: () {
+                Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => OngoingPage(),
+                        settings: RouteSettings(arguments: offering)));
+              },
               child: Row(
                 children: [
                   Icon(
@@ -93,6 +149,7 @@ class _ProgressPageState extends State<ProgressPage> {
                   spData['client_name'],
                   spData['keluhan'],
                   spData['no_wa_client'],
+                  spData['id_status'],
                   spData['status'],
                   spData['biaya'],
                   spData['komentar'],
@@ -101,6 +158,7 @@ class _ProgressPageState extends State<ProgressPage> {
                   spData['latitude'],
                 );
 
+                this.statusHolder = data.status;
                 return Container(
                   padding: EdgeInsets.all(20.0),
                   child: Column(
@@ -111,7 +169,7 @@ class _ProgressPageState extends State<ProgressPage> {
                           Container(
                             width: double.infinity,
                             child: Text(
-                              data.jobTitle!,
+                              data.idOrder!,
                               style: GoogleFonts.montserrat(
                                 fontSize: 25,
                                 fontWeight: FontWeight.bold,
@@ -151,7 +209,7 @@ class _ProgressPageState extends State<ProgressPage> {
                                     ),
                                     Container(
                                       width: double.infinity,
-                                      height: 330,
+                                      height: 280,
                                       child: Card(
                                         elevation: 0.0,
                                         color:
@@ -173,23 +231,35 @@ class _ProgressPageState extends State<ProgressPage> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text('Status'),
+                              Text('Status',
+                                  style: GoogleFonts.montserrat(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black,
+                                  )),
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.end,
                                 children: [
-                                  IconButton(
-                                    onPressed: () {},
-                                    icon: Icon(FontAwesomeIcons.refresh),
-                                    color: Colors.grey,
+                                  ElevatedButton(
+                                    onPressed: () {
+                                      _refreshStatus(offering.id_order,
+                                          data.status!, offering, context);
+                                    },
+                                    child: Icon(FontAwesomeIcons.refresh),
+                                    style: ElevatedButton.styleFrom(
+                                      primary: Colors.grey[50], // background
+                                      onPrimary: Colors.grey,
+                                      elevation: 0.0,
+                                    ),
                                   ),
                                   Container(
                                     decoration: BoxDecoration(
                                         borderRadius: BorderRadius.circular(5),
-                                        color: Colors.red),
+                                        color: _statusCl),
                                     child: Padding(
                                       padding: const EdgeInsets.all(8.0),
                                       child: Text(
-                                        data.status!,
+                                        '${statusHolder}',
                                         style: GoogleFonts.montserrat(
                                           fontSize: 12,
                                           fontWeight: FontWeight.bold,
@@ -202,7 +272,27 @@ class _ProgressPageState extends State<ProgressPage> {
                               )
                             ],
                           ),
-                          Row()
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Container(
+                                child: Text('Harga',
+                                    style: GoogleFonts.montserrat(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.black,
+                                    )),
+                              ),
+                              Container(
+                                padding: EdgeInsets.only(top: 5, bottom: 5),
+                                child: Text('Rp. ${data.biaya.toString()}',
+                                    style: GoogleFonts.montserrat(
+                                      fontSize: 16,
+                                      color: Colors.black,
+                                    )),
+                              )
+                            ],
+                          )
                         ]),
                       ),
                       Column(
@@ -257,7 +347,7 @@ class _ProgressPageState extends State<ProgressPage> {
                                 ],
                               ),
                               style: ElevatedButton.styleFrom(
-                                  primary: Color.fromARGB(255, 66, 194, 240)),
+                                  primary: Colors.deepOrange),
                             ),
                           ),
                         ],
