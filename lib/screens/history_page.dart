@@ -115,7 +115,7 @@ class _HistoryPageState extends State<HistoryPage> {
                             Container(
                               width: double.infinity,
                               child: Text(
-                                data.jobTitle!,
+                                data.idOrder!,
                                 style: GoogleFonts.montserrat(
                                   fontSize: 25,
                                   fontWeight: FontWeight.bold,

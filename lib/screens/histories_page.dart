@@ -5,22 +5,23 @@ import 'package:http/http.dart' as http;
 import 'package:kerjamin_fr/config/all_config.dart';
 import 'package:kerjamin_fr/screens/arrange_page.dart';
 import 'package:kerjamin_fr/screens/detail_order.dart';
-import 'package:kerjamin_fr/screens/histories_page.dart';
+import 'package:kerjamin_fr/screens/history_page.dart';
+import 'package:kerjamin_fr/screens/ongoing_page.dart';
 import 'package:kerjamin_fr/screens/profile_page.dart';
 import 'package:kerjamin_fr/screens/progress_page.dart';
 import 'package:kerjamin_fr/static/all_static.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-class OngoingPage extends StatefulWidget {
-  OngoingPage({Key? key}) : super(key: key);
+class HistoriesPage extends StatefulWidget {
+  HistoriesPage({Key? key}) : super(key: key);
 
   @override
-  State<OngoingPage> createState() => _OngoingPageState();
+  State<HistoriesPage> createState() => _HistoriesPageState();
 }
 
-class _OngoingPageState extends State<OngoingPage> {
-  int _currentIndex = 0;
+class _HistoriesPageState extends State<HistoriesPage> {
+  int _currentIndex = 1;
 
   _getMainPage(index) {
     var mP;
@@ -43,8 +44,8 @@ class _OngoingPageState extends State<OngoingPage> {
     return mP;
   }
 
-  Future _FetchOngoing() async {
-    var url = Uri.parse(ApiConfig.getOfferingListUrl());
+  Future _FetchHistories() async {
+    var url = Uri.parse(ApiConfig.getHistoriesUrl());
     var pr = await SharedPreferences.getInstance();
     var tokenSp = pr.getString("token") ?? "";
 
@@ -73,7 +74,7 @@ class _OngoingPageState extends State<OngoingPage> {
     return Container(
       padding: EdgeInsets.fromLTRB(10, 10, 10, 20),
       child: FutureBuilder(
-        future: this._FetchOngoing(),
+        future: this._FetchHistories(),
         builder: (context, AsyncSnapshot snapshot) {
           if (snapshot.data == null) {
             return Container(
@@ -117,14 +118,10 @@ class _OngoingPageState extends State<OngoingPage> {
                           ),
                         ),
                         onTap: () {
-                          print(snapshot.data[i].id_status);
                           Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) =>
-                                      snapshot.data[i].id_status == 1
-                                          ? DetailOffering()
-                                          : ProgressPage(),
+                                  builder: (context) => HistoryPage(),
                                   settings: RouteSettings(
                                       arguments: snapshot.data[i])));
                         },
@@ -147,11 +144,11 @@ class _OngoingPageState extends State<OngoingPage> {
           backgroundColor: Colors.white,
           color: Colors.blue,
           onRefresh: () {
-            return _FetchOngoing();
+            return _FetchHistories();
           },
           child: Scaffold(
             appBar: AppBar(
-              title: const Text('Order saat ini'),
+              title: const Text('Histori Order'),
               automaticallyImplyLeading: false,
             ),
             body: _GetCard(),

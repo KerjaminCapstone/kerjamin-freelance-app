@@ -38,4 +38,16 @@ class ApiConfig {
   static String getStatusOffering(String idOrder) {
     return getOfferingDetailUrl(idOrder) + "/status";
   }
+
+  static String getHistoriesUrl() {
+    return getMasterUrl() + "/freelancer/history";
+  }
+
+  static String getProfileUrl() {
+    return getMasterUrl() + "/freelancer/me";
+  }
+
+  static String getUpdateAddressUrl() {
+    return getProfileUrl() + "/update-address";
+  }
 }
