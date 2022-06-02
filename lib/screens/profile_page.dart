@@ -5,6 +5,7 @@ import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
 import 'package:kerjamin_fr/config/all_config.dart';
+import 'package:kerjamin_fr/screens/all_screens.dart';
 import 'package:kerjamin_fr/screens/arrange_page.dart';
 import 'package:kerjamin_fr/screens/detail_order.dart';
 import 'package:kerjamin_fr/screens/histories_page.dart';
@@ -72,26 +73,39 @@ class _ProfilePageState extends State<ProfilePage> {
     }
   }
 
-  Future<Position> _geoLocPosition() async {
+  Future<dynamic> _geoLocPosition() async {
     bool serviceEnabled;
     LocationPermission permission;
 
     serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
       await Geolocator.openLocationSettings();
-      return Future.error('Akses lokasi dimatikan.');
+      Alert(
+          context: context,
+          style: AlertStyle(
+            titleStyle: TextStyle(
+              color: Colors.redAccent,
+            ),
+          ),
+          title: 'Akses lokasi dimatikan.',
+          buttons: [
+            DialogButton(
+                child: Text("close"), onPressed: () => Navigator.pop(context))
+          ]).show();
+
+      return null;
     }
 
     permission = await Geolocator.checkPermission();
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
       if (permission == LocationPermission.denied) {
-        return Future.error('Akses lokasi ditolak');
+        return null;
       }
     }
 
     if (permission == LocationPermission.deniedForever) {
-      return Future.error('Akses lokasi telah ditolak secara permanen');
+      return null;
     }
 
     return await Geolocator.getCurrentPosition(
@@ -101,10 +115,10 @@ class _ProfilePageState extends State<ProfilePage> {
   Future<String> _getAddressFromLatLong(Position position) async {
     List<Placemark> placemarks =
         await placemarkFromCoordinates(position.latitude, position.longitude);
-    print(placemarks);
     Placemark place = placemarks[0];
+    Placemark place1 = placemarks[1];
 
-    return '${place.street}, ${place.subLocality}, ${place.locality}, ${place.postalCode}, ${place.country}';
+    return '${place1.street}, ${place.subLocality}, ${place.locality}, ${place.subAdministrativeArea}';
   }
 
   Future _updateAddress(lat, long, add) async {
@@ -143,6 +157,11 @@ class _ProfilePageState extends State<ProfilePage> {
     }
   }
 
+  Future _doLogout() async {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    await preferences.clear();
+  }
+
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
@@ -151,6 +170,34 @@ class _ProfilePageState extends State<ProfilePage> {
           appBar: AppBar(
             title: const Text('Profil Saya'),
             automaticallyImplyLeading: false,
+            actions: [
+              FlatButton(
+                  onPressed: () {
+                    Navigator.pushReplacement(context,
+                        MaterialPageRoute(builder: (context) => LoginPage()));
+
+                    _doLogout();
+                  },
+                  child: Row(
+                    children: [
+                      Icon(
+                        FontAwesomeIcons.signOutAlt,
+                        color: Colors.white,
+                      ),
+                      SizedBox(
+                        width: 5,
+                      ),
+                      Text(
+                        'Keluar',
+                        style: GoogleFonts.montserrat(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      )
+                    ],
+                  )),
+            ],
           ),
           body: FutureBuilder(
               future: _getProfileData(),
@@ -180,13 +227,56 @@ class _ProfilePageState extends State<ProfilePage> {
                         mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Center(
-                            child: Container(
-                              child: Icon(
-                                FontAwesomeIcons.circleUser,
-                                size: 50.0,
-                                color: Colors.deepOrange,
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              Container(
+                                margin: EdgeInsets.only(bottom: 15),
+                                width: 100,
+                                height: 48,
+                                child: Card(
+                                  elevation: 0.0,
+                                  color: Colors.amber,
+                                  child: Center(
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Text(
+                                          '${data.points}',
+                                          style: GoogleFonts.montserrat(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                        SizedBox(
+                                          width: 3,
+                                        ),
+                                        Icon(
+                                          FontAwesomeIcons.solidStar,
+                                          color: Colors.white,
+                                          size: 18,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
                               ),
+                            ],
+                          ),
+                          Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                Container(
+                                  child: Icon(
+                                    FontAwesomeIcons.circleUser,
+                                    size: 80.0,
+                                    color: Colors.deepOrange,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                           Container(
@@ -310,11 +400,27 @@ class _ProfilePageState extends State<ProfilePage> {
                             child: ElevatedButton(
                               onPressed: () async {
                                 Position pos = await _geoLocPosition();
-                                print('${pos.latitude} ${pos.longitude}');
-                                String addr = await _getAddressFromLatLong(pos);
-                                print(addr);
-                                await _updateAddress(
-                                    pos.latitude, pos.longitude, addr);
+                                if (pos != null) {
+                                  String addr =
+                                      await _getAddressFromLatLong(pos);
+                                  await _updateAddress(
+                                      pos.latitude, pos.longitude, addr);
+                                } else {
+                                  Alert(
+                                      context: context,
+                                      style: AlertStyle(
+                                        titleStyle: TextStyle(
+                                          color: Colors.redAccent,
+                                        ),
+                                      ),
+                                      title: 'Akses lokasi ditolak.',
+                                      buttons: [
+                                        DialogButton(
+                                            child: Text("close"),
+                                            onPressed: () =>
+                                                Navigator.pop(context))
+                                      ]).show();
+                                }
                               },
                               child: Text(
                                 'Perbarui alamat',

@@ -58,14 +58,16 @@ class _HistoriesPageState extends State<HistoriesPage> {
     var datas = responseDecode['data'];
 
     List<OfferingItem> items = [];
-    setState(() {
-      for (var data in datas) {
-        OfferingItem item = OfferingItem(data['id_order'], data['job_title'],
-            data['client_name'], data['at'], data['id_status']);
+    if (datas != null) {
+      setState(() {
+        for (var data in datas) {
+          OfferingItem item = OfferingItem(data['id_order'], data['job_title'],
+              data['client_name'], data['at'], data['id_status']);
 
-        items.add(item);
-      }
-    });
+          items.add(item);
+        }
+      });
+    }
 
     return items;
   }

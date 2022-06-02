@@ -133,7 +133,7 @@ class _ProgressPageState extends State<ProgressPage> {
                     ),
                   )
                 ],
-              ))
+              )),
         ],
       ),
       body: SingleChildScrollView(
