@@ -1,6 +1,6 @@
 class ApiConfig {
   static String getMasterUrl() {
-    return "https://kerjamin-api-v1.herokuapp.com/api";
+    return "https://kerjamin-api-ko6izzknpq-et.a.run.app/api";
   }
 
   static String getLoginUrl() {
@@ -13,6 +13,10 @@ class ApiConfig {
 
   static String getOfferingDetailUrl(String idOrder) {
     return getOfferingListUrl() + "/" + idOrder;
+  }
+
+  static String getCoordinateBothUrl(String idOrder) {
+    return getOfferingDetailUrl(idOrder) + "/coordinate-both";
   }
 
   static String acceptOffering(String idOrder) {

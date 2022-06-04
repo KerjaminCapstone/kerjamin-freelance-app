@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:kerjamin_fr/screens/arrange_page.dart';
+import 'package:kerjamin_fr/screens/map_page.dart';
+import 'package:kerjamin_fr/screens/ongoing_page.dart';
 import 'package:kerjamin_fr/static/all_static.dart';
 import 'package:kerjamin_fr/config/all_config.dart';
 import 'package:kerjamin_fr/static/offering_detail.dart';
@@ -87,7 +89,38 @@ class _DetailOfferingState extends State<DetailOffering> {
     final offering = ModalRoute.of(context)!.settings.arguments as OfferingItem;
 
     return Scaffold(
-      appBar: AppBar(title: Text('Oleh ${offering.client_name}')),
+      appBar: AppBar(
+        title: Text('Detail order'),
+        actions: [
+          FlatButton(
+              onPressed: () {
+                Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => MapPage(),
+                        settings: RouteSettings(arguments: offering)));
+              },
+              child: Row(
+                children: [
+                  Icon(
+                    FontAwesomeIcons.locationDot,
+                    color: Colors.white,
+                  ),
+                  SizedBox(
+                    width: 5,
+                  ),
+                  Text(
+                    'Lihat lokasi',
+                    style: GoogleFonts.montserrat(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  )
+                ],
+              )),
+        ],
+      ),
       body: SingleChildScrollView(
           child: Container(
         child: FutureBuilder(
