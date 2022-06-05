@@ -13,6 +13,7 @@ class OfferingDetail {
   String? rating;
   double? longitude;
   double? latitude;
+  String? jarak;
 
   OfferingDetail(
     this.idOrder,
@@ -27,6 +28,7 @@ class OfferingDetail {
     this.rating,
     this.longitude,
     this.latitude,
+    this.jarak,
   ) {
     this.jobTitle = toBeginningOfSentenceCase(this.jobTitle);
   }

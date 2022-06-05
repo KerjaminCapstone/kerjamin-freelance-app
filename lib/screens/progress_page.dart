@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:kerjamin_fr/screens/arrange_page.dart';
 import 'package:kerjamin_fr/screens/history_page.dart';
+import 'package:kerjamin_fr/screens/map_page.dart';
 import 'package:kerjamin_fr/screens/ongoing_page.dart';
 import 'package:kerjamin_fr/static/all_static.dart';
 import 'package:kerjamin_fr/static/offering_detail.dart';
@@ -109,10 +110,10 @@ class _ProgressPageState extends State<ProgressPage> {
         actions: [
           FlatButton(
               onPressed: () {
-                Navigator.pushReplacement(
+                Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => OngoingPage(),
+                        builder: (context) => MapPage(),
                         settings: RouteSettings(arguments: offering)));
               },
               child: Row(
@@ -156,6 +157,7 @@ class _ProgressPageState extends State<ProgressPage> {
                   spData['rating'],
                   spData['longitude'],
                   spData['latitude'],
+                  spData['jarak'],
                 );
 
                 this.statusHolder = data.status;
@@ -168,13 +170,48 @@ class _ProgressPageState extends State<ProgressPage> {
                         children: <Widget>[
                           Container(
                             width: double.infinity,
-                            child: Text(
-                              data.idOrder!,
-                              style: GoogleFonts.montserrat(
-                                fontSize: 25,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.deepOrange,
-                              ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  data.idOrder!,
+                                  style: GoogleFonts.montserrat(
+                                    fontSize: 25,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.deepOrange,
+                                  ),
+                                ),
+                                Card(
+                                  elevation: 0.0,
+                                  color: Colors.blueAccent,
+                                  child: Center(
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Text(
+                                            '${data.jarak}',
+                                            style: GoogleFonts.montserrat(
+                                              fontSize: 18,
+                                              color: Colors.white,
+                                            ),
+                                          ),
+                                          SizedBox(
+                                            width: 3,
+                                          ),
+                                          Icon(
+                                            FontAwesomeIcons.locationDot,
+                                            color: Colors.white,
+                                            size: 18,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                           Container(

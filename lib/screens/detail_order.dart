@@ -91,35 +91,35 @@ class _DetailOfferingState extends State<DetailOffering> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Detail order'),
-        actions: [
-          FlatButton(
-              onPressed: () {
-                Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => MapPage(),
-                        settings: RouteSettings(arguments: offering)));
-              },
-              child: Row(
-                children: [
-                  Icon(
-                    FontAwesomeIcons.locationDot,
-                    color: Colors.white,
-                  ),
-                  SizedBox(
-                    width: 5,
-                  ),
-                  Text(
-                    'Lihat lokasi',
-                    style: GoogleFonts.montserrat(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                  )
-                ],
-              )),
-        ],
+        // actions: [
+        //   FlatButton(
+        //       onPressed: () {
+        //         Navigator.pushReplacement(
+        //             context,
+        //             MaterialPageRoute(
+        //                 builder: (context) => MapPage(),
+        //                 settings: RouteSettings(arguments: offering)));
+        //       },
+        //       child: Row(
+        //         children: [
+        //           Icon(
+        //             FontAwesomeIcons.locationDot,
+        //             color: Colors.white,
+        //           ),
+        //           SizedBox(
+        //             width: 5,
+        //           ),
+        //           Text(
+        //             'Lihat lokasi',
+        //             style: GoogleFonts.montserrat(
+        //               fontSize: 18,
+        //               fontWeight: FontWeight.bold,
+        //               color: Colors.white,
+        //             ),
+        //           )
+        //         ],
+        //       )),
+        // ],
       ),
       body: SingleChildScrollView(
           child: Container(
@@ -141,6 +141,7 @@ class _DetailOfferingState extends State<DetailOffering> {
                   spData['rating'],
                   spData['longitude'],
                   spData['latitude'],
+                  spData['jarak'],
                 );
 
                 return Container(
@@ -148,17 +149,52 @@ class _DetailOfferingState extends State<DetailOffering> {
                   child: Column(
                     children: [
                       Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
                           Container(
                             width: double.infinity,
-                            child: Text(
-                              data.idOrder!,
-                              style: GoogleFonts.montserrat(
-                                fontSize: 25,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.deepOrange,
-                              ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  data.idOrder!,
+                                  style: GoogleFonts.montserrat(
+                                    fontSize: 25,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.deepOrange,
+                                  ),
+                                ),
+                                Card(
+                                  elevation: 0.0,
+                                  color: Colors.blueAccent,
+                                  child: Center(
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Text(
+                                            '${data.jarak}',
+                                            style: GoogleFonts.montserrat(
+                                              fontSize: 18,
+                                              color: Colors.white,
+                                            ),
+                                          ),
+                                          SizedBox(
+                                            width: 3,
+                                          ),
+                                          Icon(
+                                            FontAwesomeIcons.locationDot,
+                                            color: Colors.white,
+                                            size: 18,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                           Container(

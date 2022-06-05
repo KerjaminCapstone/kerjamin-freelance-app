@@ -49,16 +49,16 @@ class _MapPageState extends State<MapPage> {
         builder: (context, AsyncSnapshot snapshot) {
           if (snapshot.hasData) {
             List<Marker> _markers = <Marker>[];
-            var frPos =
-                LatLng(snapshot.data["fr_lat"], snapshot.data["fr_long"]);
-            _markers.add(
-              Marker(
-                  markerId: MarkerId('Freelancer'),
-                  position: frPos,
-                  infoWindow: InfoWindow(title: 'Freelancer'),
-                  icon: BitmapDescriptor.defaultMarkerWithHue(
-                      BitmapDescriptor.hueOrange)),
-            );
+            // var frPos =
+            //     LatLng(snapshot.data["fr_lat"], .data["fr_long"]);
+            // _markers.add(snapshot
+            //   Marker(
+            //       markerId: MarkerId('Freelancer'),
+            //       position: frPos,
+            //       infoWindow: InfoWindow(title: 'Freelancer'),
+            //       icon: BitmapDescriptor.defaultMarkerWithHue(
+            //           BitmapDescriptor.hueOrange)),
+            // );
             var clPos =
                 LatLng(snapshot.data["cl_lat"], snapshot.data["cl_long"]);
             _markers.add(
@@ -71,47 +71,29 @@ class _MapPageState extends State<MapPage> {
             );
 
             var _initialCameraPosition =
-                CameraPosition(target: frPos, zoom: 11.5);
+                CameraPosition(target: clPos, zoom: 11.5);
             return Scaffold(
               appBar: AppBar(
                 centerTitle: false,
                 backgroundColor: Colors.white,
                 foregroundColor: Colors.black,
                 actions: [
-                  if (frPos != null)
-                    TextButton(
-                      onPressed: () => _googleMapController.animateCamera(
-                        CameraUpdate.newCameraPosition(
-                          CameraPosition(
-                            target: frPos,
-                            zoom: 14.5,
-                            tilt: 50.0,
-                          ),
+                  TextButton(
+                    onPressed: () => _googleMapController.animateCamera(
+                      CameraUpdate.newCameraPosition(
+                        CameraPosition(
+                          target: clPos,
+                          zoom: 14.5,
+                          tilt: 50.0,
                         ),
                       ),
-                      style: TextButton.styleFrom(
-                        primary: Colors.deepOrange,
-                        textStyle: const TextStyle(fontWeight: FontWeight.w600),
-                      ),
-                      child: const Text('POSISI ANDA'),
                     ),
-                  if (clPos != null)
-                    TextButton(
-                      onPressed: () => _googleMapController.animateCamera(
-                        CameraUpdate.newCameraPosition(
-                          CameraPosition(
-                            target: clPos,
-                            zoom: 14.5,
-                            tilt: 50.0,
-                          ),
-                        ),
-                      ),
-                      style: TextButton.styleFrom(
-                        primary: Colors.blue,
-                        textStyle: const TextStyle(fontWeight: FontWeight.w600),
-                      ),
-                      child: const Text('POSISI CLIENT'),
-                    )
+                    style: TextButton.styleFrom(
+                      primary: Colors.blue,
+                      textStyle: const TextStyle(fontWeight: FontWeight.w600),
+                    ),
+                    child: const Text('LIHAT POSISI CLIENT'),
+                  )
                 ],
               ),
               body: GoogleMap(
